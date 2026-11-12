@@ -439,8 +439,8 @@ DIC_mini_Project-JD/
 Developed as part of a Digital Integrated Circuits (DIC) full-custom VLSI project.
 
 - **Author**: VLSI Design & Verification Engineer
-- **GitHub**: [@your-username](https://github.com/your-username)
-- **LinkedIn**: [Connect on LinkedIn](https://www.linkedin.com/)
+- **GitHub**: [@your-username]([https://github.com/your-username](https://github.com/dinesh-jonnalagadda))
+- **LinkedIn**: [Connect on LinkedIn]([https://www.linkedin.com/](https://www.linkedin.com/in/dinesh-jonnalagadda-424451289/))
 
 ---
 
