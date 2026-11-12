@@ -1,0 +1,48 @@
+# ==============================================================================
+# Cadence Virtuoso & EDA Tool Ignores
+# ==============================================================================
+
+# Cadence session logs & crash recovery
+CDS.log*
+cds.log*
+artist.log*
+pvs.log*
+pvs.rep*
+assura.log*
+*~
+*.bak
+*.tmp
+*.swp
+
+# Cadence OpenAccess lock files
+*.cdslck
+*.cdslck.*
+*.lck
+
+# Spectre / ADE simulation runs and intermediate databases
+simulation/
+*.ahdlSimDB/
+*.raw/
+*.psf/
+*.tran
+*.dc
+*.ac
+
+# Assura / PVS temporary run directories & huge binary intermediates
+*.vlw/
+*.drc.run/
+*.lvs.run/
+run_drc/
+run_lvs/
+
+# Cadence user preferences and history
+.cadence/dfII/history/
+.cadence/perf/
+
+# Linux / NFS temporary files
+.nfs*
+
+# OS specific files
+Thumbs.db
+Desktop.ini
+.DS_Store

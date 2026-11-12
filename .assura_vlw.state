@@ -1,0 +1,30 @@
+;----------------------------------------------------------------------------
+; @(#)$CDS: assura version av4.1:Production:dfII20.1-64b:ICADVM20.1-64b.500.25 11/04/22 00:04 (sjfhw885) $
+; sub-version 4.1_USR6_EHF13
+;----------------------------------------------------------------------------
+
+
+;----------------------------------------------------------------------------
+; Assura VLW saved state
+;----------------------------------------------------------------------------
+
+vuiLayerListOrder  =  "Alphabetical"
+vuiLayerList  = '(
+		("M1term" 281 "M1term = geomAndNot( Metal1 M1dummy )" 0 6 t "y0 (drawing)" t)
+		("M2term" 282 "M2term = geomAndNot( Metal2 M2dummy )" 0 7 t "y1 (drawing)" t)
+		("M3term" 283 "M3term = geomAndNot( Metal3 M3dummy )" 0 8 t "y2 (drawing)" t)
+		("M4term" 284 "M4term = geomAndNot( Metal4 M4dummy )" 0 9 t "y3 (drawing)" t)
+		("NSDcont" 1056 "NSDcont = groupVias(  via(NSDcont) conn1(M1term) conn2(NSDterm) )" 1 3 t "y2 (drawing)" t)
+		("NSDterm" 290 "NSDterm = geomAndNot( NSD Resdum )" 0 10 t "y3 (drawing)" t)
+		("NWELLterm" 291 "NWELLterm = geomAndNot( Nwell ResWdum )" 0 11 t "y4 (drawing)" t)
+		("NWVIA" 293 "NWVIA = geomAnd( NSDterm NWELLterm )" 0 12 t "y4 (drawing)" t)
+		("POLYcont" 1060 "POLYcont = groupVias(  via(POLYcont) conn1(M1term) conn2(POLYterm) )" 1 4 t "y6 (drawing)" t)
+		("POLYterm" 295 "POLYterm = geomAndNot( Poly Resdum )" 0 13 t "y7 (drawing)" t)
+		("PSDcont" 1055 "PSDcont = groupVias(  via(PSDcont) conn1(M1term) conn2(PSDterm) )" 1 2 t "y8 (drawing)" t)
+		("PSDterm" 299 "PSDterm = geomAndNot( PSD Resdum )" 0 14 t "y9 (drawing)" t)
+		("PSUB" 321 "PSUB = geomOr( BJTdum L71054 )" 0 15 t "y0 (drawing)" t)
+		("SUBVIA" 324 "SUBVIA = geomAndNot( L56122 Nwell )" 0 16 t "y0 (drawing)" t)
+		("Via1" 252 "Via1 = geomOr( Via1 )" 1 0 t "y3 (drawing)" t)
+		("Via2NoCapInd" 1061 "Via2NoCapInd = groupVias(  via(Via2NoCapInd) conn1(M3term) conn2(M2term) )" 1 5 t "y4 (drawing)" t)
+		("Via3" 256 "Via3 = geomOr( Via3 )" 1 1 t "y6 (drawing)" t)
+)

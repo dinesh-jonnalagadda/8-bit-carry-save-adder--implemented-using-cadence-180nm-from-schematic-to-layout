@@ -1,0 +1,3 @@
+SOFTINCLUDE /home/vlsi15/cds.lib
+DEFINE CSA /home/vlsi15/Documents/jd_files/DIC_mini_Project-JD/CSA
+DEFINE avTech /home/install/ASSURA41/tools.lnx86/assura/etc/avtech/avTech
