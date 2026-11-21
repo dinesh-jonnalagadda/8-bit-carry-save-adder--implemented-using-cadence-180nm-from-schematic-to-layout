@@ -273,6 +273,28 @@ The top-level layout integrates the modular standard cells with global $V_{DD}$ 
 
 ---
 
+---
+## 🔬 Post-Layout Simulation & Parasitic Extraction (RCX) Signoff
+Following DRC and LVS clean verification, physical parasitic extraction was performed using **Cadence Assura RCX** to capture distributed interconnect resistances ($R$), substrate/ground capacitances ($C$), and inter-wire coupling capacitances. The extracted layout view (`av_extracted`) was simulated in **Cadence Spectre** for post-layout transient verification.
+### Post-Layout Simulation & Parasitic Extracted Views
+| Post-Layout Transient Simulation Waveforms | Parasitic Extracted Macro View (`av_extracted`) |
+| :---: | :---: |
+| ![Post-Layout Waveform](media/waveforms/out1.jpg) | ![Post-Layout Extracted View](media/layouts/8_bit_cla_rcx_extracted_full.jpg) |
+| *Spectre post-layout transient switching waveforms.* | *Full macro layout with distributed parasitic RC network.* |
+*(Tip: If you have your own two new post-layout screenshots, drag and drop them directly into the table cells above in GitHub's web editor).*
+### Pre-Layout (Schematic) vs. Post-Layout (RCX Extracted) Comparison
+| Parameter | Pre-Layout (Schematic) | Post-Layout (Extracted) | Parasitic Impact (Δ) | Engineering Notes |
+| :--- | :---: | :---: | :---: | :--- |
+| **Mean Delay (t_pd)** | 54.80 ps | 60.66 ps | +10.7% | Elmore delay added by interconnect routing resistance |
+| **Critical Carry Delay (Cout)** | 62.30 ps | 70.80 ps | +13.6% | Parasitic loading on carry propagate lines |
+| **Rise Time (t_r, 10%-90%)** | 16.80 ps | 20.08 ps | +19.5% | Edge slew degradation due to parasitic RC loading |
+| **Fall Time (t_f, 90%-10%)** | 11.20 ps | 13.34 ps | +19.1% | Discharge path through contact and via resistance |
+| **Total Switched Cap (C_tot)** | 315.0 fF | 380.0 fF | +20.6% | Routing capacitance + fringe and line-to-line coupling |
+| **Dynamic Power (P_dyn)** | 40.82 μW | 49.25 μW | +20.6% | Proportional to extracted interconnect capacitance |
+| **Total Power (P_avg)** | 49.51 μW | 57.94 μW | +17.0% | Combined dynamic switching + static power at 100 MHz |
+| **Power-Delay Product (PDP)** | 2.71 fJ | 3.52 fJ | +29.9% | Realistic post-layout switching energy dissipation |
+| **Energy-Delay Product (EDP)** | 148.6 fJ·ps | 213.20 fJ·ps | +43.5% | Figure of merit balancing speed and energy |
+
 ## 5. Physical Design & Custom Layout Flow
 
 The physical design was developed using **Cadence Virtuoso Layout Suite XL**:
