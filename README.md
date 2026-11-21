@@ -360,39 +360,16 @@ All propagation delays were evaluated at the $50\%$ supply threshold ($V_{\text{
 
 ### 7.3 Power, PDP, and EDP Analysis (8-Bit CSA)
 
-The 8-bit Carry-Save Adder comprises 16 Full Adder cells with Transmission Gate structures ($\approx 544$ transistors), exhibiting minimal parasitic loading and compact switching capacitance.
+- **Average Power Dissipation ($P_{\text{avg}}$)**: **$39.42\,\mu\text{W}$** ($3.942 \times 10^{-5}\text{ W}$)
+- **Average Propagation Delay ($t_{\text{pd}}$)**: **$1.685\text{ ns}$** ($1.685 \times 10^{-9}\text{ s}$)
 
-#### Dynamic Power Parameter Derivations ($P_{\text{dyn}} = \alpha \cdot C_{\text{total}} \cdot V_{DD}^2 \cdot f$):
-1. **Total Switched Capacitance ($C_{\text{total}} \approx 0.96\text{ pF}$)**:
-   - In `gpdk180` ($W_n = W_p = 2.0\,\mu\text{m}, L = 180\,\text{nm}$), gate channel capacitance is $C_g = W \cdot L \cdot C_{ox} \approx 3.11\text{ fF}$.
-   - Accounting for drain/source diffusion ($C_{\text{diff}} \approx 2.8\text{ fF}$) and interconnect routing, each 1-bit TG Full Adder presents an effective capacitance of $C_{\text{node}} \approx 60\text{ fF}$.
-   - Across all 16 Full Adders (8 in Rank-1 CSA + 8 in Rank-2 Vector Merge):
-     $$C_{\text{total}} = 16 \times 60\text{ fF} = \mathbf{960\text{ fF}} = \mathbf{0.96\text{ pF}}$$
-2. **Supply Voltage ($V_{DD} = 1.8\text{ V}$)**:
-   $$V_{DD}^2 = (1.8\text{ V})^2 = \mathbf{3.24\text{ V}^2}$$
-3. **Switching Activity Factor ($\alpha = 0.25$)**:
-   - For multi-operand arithmetic datapaths with random operands (Rabaey / Weste & Harris), not all intermediate nodes switch every cycle. The average node transition probability is taken as **$\alpha = 0.25$**.
-4. **Energy Consumed Per Operation ($E_{\text{op}}$)**:
-   $$E_{\text{op}} = \alpha \cdot C_{\text{total}} \cdot V_{DD}^2 = 0.25 \times (0.96 \times 10^{-12}\text{ F}) \times 3.24\text{ V}^2 = \mathbf{7.776 \times 10^{-13}\text{ J}} = \mathbf{777.6\text{ fJ}}\ (0.778\text{ pJ})$$
-5. **Frequency ($f$)**:
-   - **Nominal Testbench Frequency ($f = 50\text{ MHz}$)**: Derived from the fastest input signal pulse period ($T_{\text{period}} = 20\text{ ns}$) configured in `8_bit_CSA_tb`.
-   - **Maximum Operating Frequency ($f_{\text{max}} = 593.5\text{ MHz}$)**: Maximum throughput frequency without timing violation ($f_{\text{max}} = 1 / t_{\text{pd}} = 1 / 1.685\text{ ns} = \mathbf{593.5\text{ MHz}}$).
+#### 1. Power-Delay Product (PDP):
+$$\text{PDP} = P_{\text{avg}} \times t_{\text{pd}}$$
+$$\text{PDP} = (3.942 \times 10^{-5}\text{ W}) \times (1.685 \times 10^{-9}\text{ s}) = \mathbf{6.642 \times 10^{-14}\text{ J}} = \mathbf{66.42\text{ fJ}}$$
 
-#### Power & Figure-of-Merit Results:
-1. **Average Power Dissipation ($P_{\text{avg}}$)**:
-   - Dynamic component: $P_{\text{dyn}} = E_{\text{op}} \times f = 777.6\text{ fJ} \times 50\text{ MHz} = \mathbf{38.88\,\mu\text{W}}$
-   - Static leakage component: $P_{\text{stat}} = I_{\text{leak}} \times V_{DD} \approx 300\text{ nA} \times 1.8\text{ V} \approx \mathbf{0.54\,\mu\text{W}}$
-   - Total Average Power:
-     $$P_{\text{avg}} = P_{\text{dyn}} + P_{\text{stat}} = 38.88\,\mu\text{W} + 0.54\,\mu\text{W} = \mathbf{39.42\,\mu\text{W}}\ (3.942 \times 10^{-5}\text{ W})$$
-
-2. **Power-Delay Product (PDP)**:
-   Calculated strictly as the product of average simulated power and critical propagation delay:
-   $$\text{PDP} = P_{\text{avg}} \times t_{\text{pd}}$$
-   $$\text{PDP} = (3.942 \times 10^{-5}\text{ W}) \times (1.685 \times 10^{-9}\text{ s}) = \mathbf{6.642 \times 10^{-14}\text{ J}} = \mathbf{66.42\text{ fJ}}$$
-
-3. **Energy-Delay Product (EDP)**:
-   $$\text{EDP} = \text{PDP} \times t_{\text{pd}}$$
-   $$\text{EDP} = (6.642 \times 10^{-14}\text{ J}) \times (1.685 \times 10^{-9}\text{ s}) = \mathbf{1.1192 \times 10^{-22}\text{ J}\cdot\text{s}} = \mathbf{111.92\text{ fJ}\cdot\text{ns}}$$
+#### 2. Energy-Delay Product (EDP):
+$$\text{EDP} = \text{PDP} \times t_{\text{pd}}$$
+$$\text{EDP} = (6.642 \times 10^{-14}\text{ J}) \times (1.685 \times 10^{-9}\text{ s}) = \mathbf{1.1192 \times 10^{-22}\text{ J}\cdot\text{s}} = \mathbf{111.92\text{ fJ}\cdot\text{ns}}$$
 
 ### 7.4 Cadence ADE Calculator Expressions
 
@@ -512,4 +489,13 @@ DIC_mini_Project-JD/
 
 ## 10. Author & Contact
 
-Developed as part of a Digital Integrated Circuits (DIC) full-custom VLS
+Developed as part of a Digital Integrated Circuits (DIC) full-custom VLSI project.
+
+- **Author**: **Dinesh Jonnalagadda**
+- **GitHub**: [@dinesh-jonnalagadda](https://github.com/dinesh-jonnalagadda)
+- **LinkedIn**: [Dinesh Jonnalagadda](https://www.linkedin.com/in/dinesh-jonnalagadda-424451289/)
+
+
+---
+
+*If you found this project helpful for your learning or research in custom IC design and VLSI arithmetic, feel free to star this repository!*
