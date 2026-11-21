@@ -279,7 +279,7 @@ Following DRC and LVS clean verification, physical parasitic extraction was perf
 ### Post-Layout Simulation & Parasitic Extracted Views
 | Post-Layout Transient Simulation Waveforms | Parasitic Extracted Macro View (`av_extracted`) |
 | :---: | :---: |
-| ![Post-Layout Waveform](media/waveforms/out1.jpg) | ![Post-Layout Extracted View](media/layouts/8_bit_cla_rcx_extracted_full.jpg) |
+| ![Post-Layout Waveform](docs/assets/post_layout_transient_1.jpeg) | ![Post-Layout Extracted View](docs/assets/Extracted_macro_View.jpeg) |
 | *Spectre post-layout transient switching waveforms.* | *Full macro layout with distributed parasitic RC network.* |
 *(Tip: If you have your own two new post-layout screenshots, drag and drop them directly into the table cells above in GitHub's web editor).*
 ### Pre-Layout (Schematic) vs. Post-Layout (RCX Extracted) Comparison
