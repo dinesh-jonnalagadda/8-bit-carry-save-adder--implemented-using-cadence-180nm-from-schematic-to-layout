@@ -36,9 +36,8 @@ The design is constructed hierarchically from custom transistor-level primitive 
 - [7. Simulation Results & Performance Metrics](#7-simulation-results--performance-metrics)
   - [7.1 Waveform Analysis & Functional Correctness](#71-waveform-analysis--functional-correctness)
   - [7.2 Timing Performance Breakdown (tPLH, tPHL, tpd, tcd)](#72-timing-performance-breakdown-tplh-tphl-tpd-tcd)
-  - [7.3 Transistor-Level RC & Parasitic Extraction Model](#73-transistor-level-rc--parasitic-extraction-model)
-  - [7.4 Power, PDP, and EDP Analysis (8-Bit CSA)](#74-power-pdp-and-edp-analysis-8-bit-csa)
-  - [7.5 Cadence ADE Calculator Expressions](#75-cadence-ade-calculator-expressions)
+  - [7.3 Power, PDP, and EDP Analysis (8-Bit CSA)](#73-power-pdp-and-edp-analysis-8-bit-csa)
+  - [7.4 Cadence ADE Calculator Expressions](#74-cadence-ade-calculator-expressions)
 - [8. Repository Directory Structure](#8-repository-directory-structure)
 - [9. How to Open and Simulate in Cadence Virtuoso](#9-how-to-open-and-simulate-in-cadence-virtuoso)
 - [10. Author & Contact](#10-author--contact)
@@ -359,16 +358,7 @@ All propagation delays were evaluated at the $50\%$ supply threshold ($V_{\text{
 
 > **Comparative Advantage**: A conventional 3-operand Ripple-Carry Adder would incur a critical delay of $2 \times 8 \times t_{\text{carry}} \approx 3.09\text{ ns}$. The Carry-Save Adder achieves **$1.74\text{ ns}$ (43.7% latency reduction)**.
 
-### 7.3 Transistor-Level RC & Parasitic Extraction Model
-Extracted using `gpdk180` parameters ($W_n = W_p = 2.0\,\mu\text{m}$, $L = 0.18\,\mu\text{m}$, $t_{ox} \approx 4\,\text{nm}$):
-- **Gate Capacitance**: $C_{ox} \approx 8.63\text{ fF}/\mu\text{m}^2 \implies C_{g,n} = C_{g,p} \approx 3.11\text{ fF}$.
-- **Diffusion Capacitance**: $C_{\text{diff}} \approx 2.80\text{ fF}$ per contact node.
-- **Transistor ON-Resistance ($R_{\text{on}}$)**:
-  - $R_n \approx 1.25\text{ k}\Omega$
-  - $R_p \approx 3.12\text{ k}\Omega$
-  - Transmission Gate equivalent: $R_{\text{TG}} = R_n \parallel R_p \approx 0.89\text{ k}\Omega\ (890\,\Omega)$
-
-### 7.4 Power, PDP, and EDP Analysis (8-Bit CSA)
+### 7.3 Power, PDP, and EDP Analysis (8-Bit CSA)
 
 The 8-bit Carry-Save Adder comprises 16 Full Adder cells with Transmission Gate structures ($\approx 544$ transistors), exhibiting minimal parasitics and ultra-low switching capacitance:
 
@@ -390,7 +380,7 @@ $$\text{Total Effective Switched Capacitance: } C_{\text{total}} \approx 16 \tim
    Primary metric balancing computational throughput and energy cost:
    $$\text{EDP} = \text{PDP} \times t_{\text{pd}} = 677.4\text{ fJ} \times 1.74\text{ ns} = \mathbf{1178.7\text{ fJ}\cdot\text{ns}} = \mathbf{1.179 \times 10^{-21}\text{ J}\cdot\text{s}}$$
 
-### 7.5 Cadence ADE Calculator Expressions
+### 7.4 Cadence ADE Calculator Expressions
 
 To measure these directly from Spectre transient simulation in Virtuoso:
 ```scheme
