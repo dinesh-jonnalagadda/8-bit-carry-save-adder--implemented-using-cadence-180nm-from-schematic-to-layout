@@ -75,7 +75,7 @@ This project delivers:
 | **Word Length** | 8-bit ($A[7:0]$, $B[7:0]$, $C[7:0]$) | 3-operand multi-input addition |
 | **Output Word Length** | 9-bit ($S[8:0]$ + Carry Out) | Full arithmetic range preserved without overflow |
 | **Propagation Delay ($t_{pd}$)** | **1.74 ns** | Critical path ($t_{PLH} = 1.82\,\text{ns}$, $t_{PHL} = 1.66\,\text{ns}$) |
-| **Contamination Delay ($t_{cd}$)** | **0.156 ns** | Minimum output latency ($S_0$ path) |
+| **Contamination Delay ($t_{cd}$)** | **0.226 ns (226 ps)** | Minimum output latency ($S_0$ path from transient simulation) |
 | **Average Power ($P_{avg}$)** | **389.3 µW** (@ 500 MHz) / **39.4 µW** (@ 50 MHz) | Dynamic switching + subthreshold leakage |
 | **Power-Delay Product (PDP)** | **677.4 fJ (0.677 pJ)** | Energy consumed per 8-bit addition |
 | **Energy-Delay Product (EDP)** | **1.18 × 10⁻²¹ J·s (1178.7 fJ·ns)** | Energy-efficiency and speed figure-of-merit |
@@ -353,23 +353,34 @@ All propagation delays were evaluated at the $50\%$ supply threshold ($V_{\text{
 | **CMOS Inverter** | $32.3\text{ ps}$ | $12.9\text{ ps}$ | $22.6\text{ ps}$ | $12.9\text{ ps}$ | Gate-to-drain pull-up/pull-down ($C_L \approx 15\text{ fF}$) |
 | **TG XOR Gate** | $52.1\text{ ps}$ | $38.5\text{ ps}$ | $45.3\text{ ps}$ | $38.5\text{ ps}$ | Inverter buffer $+$ complementary TG switch |
 | **1-Bit Full Adder** | $185.0\text{ ps}$ | $162.0\text{ ps}$ | **$193.3\text{ ps}$** | $125.0\text{ ps}$ | Critical carry path: $1\text{ XOR} + 1\text{ AND} + 1\text{ OR} + t_{\text{buf}}$ |
-| **4-Bit CSA Block** | $0.99\text{ ns}$ | $0.94\text{ ns}$ | **$0.965\text{ ns}$** | $0.156\text{ ns}$ | Rank 1 CSA stage ($0.193\text{ ns}$) $+ 4\times$ ripple carry merge |
-| **8-Bit Top CSA** | **$1.82\text{ ns}$** | **$1.66\text{ ns}$** | **$1.74\text{ ns}$** | **$0.156\text{ ns}$** | Rank 1 CSA stage $+ 8\times$ ripple carry merge ($S_8$ output) |
+| **4-Bit CSA Block** | $0.99\text{ ns}$ | $0.94\text{ ns}$ | **$0.965\text{ ns}$** | $226\text{ ps}$ | Rank 1 CSA stage ($0.193\text{ ns}$) $+ 4\times$ ripple carry merge |
+| **8-Bit Top CSA** | **$1.82\text{ ns}$** | **$1.66\text{ ns}$** | **$1.74\text{ ns}$** | **$226\text{ ps}$** | Rank 1 CSA stage $+ 8\times$ ripple carry merge ($S_8$ output) |
 
 > **Comparative Advantage**: A conventional 3-operand Ripple-Carry Adder would incur a critical delay of $2 \times 8 \times t_{\text{carry}} \approx 3.09\text{ ns}$. The Carry-Save Adder achieves **$1.74\text{ ns}$ (43.7% latency reduction)**.
 
 ### 7.3 Power, PDP, and EDP Analysis (8-Bit CSA)
 
-The 8-bit Carry-Save Adder comprises 16 Full Adder cells with Transmission Gate structures ($\approx 544$ transistors), exhibiting minimal parasitics and ultra-low switching capacitance:
+The 8-bit Carry-Save Adder comprises 16 Full Adder cells with Transmission Gate structures ($\approx 544$ transistors), exhibiting minimal parasitic loading and compact switching capacitance.
 
-$$\text{Total Effective Switched Capacitance: } C_{\text{total}} \approx 16 \times 60\text{ fF} \approx 0.96\text{ pF}$$
+#### Dynamic Power Parameter Derivations ($P_{\text{dyn}} = \alpha \cdot C_{\text{total}} \cdot V_{DD}^2 \cdot f$):
+1. **Total Switched Capacitance ($C_{\text{total}} \approx 0.96\text{ pF}$)**:
+   - In `gpdk180` ($W_n = W_p = 2.0\,\mu\text{m}, L = 180\,\text{nm}$), gate capacitance is $C_g = W \cdot L \cdot C_{ox} \approx 3.11\text{ fF}$.
+   - Accounting for drain/source diffusion ($C_{\text{diff}} \approx 2.8\text{ fF}$) and internal interconnect routing, each 1-bit TG Full Adder presents an effective capacitance of $C_{\text{node}} \approx 60\text{ fF}$.
+   - Across the 16 Full Adders (8 in Rank-1 CSA + 8 in Rank-2 Vector Merge):
+     $$C_{\text{total}} = 16 \times 60\text{ fF} \approx \mathbf{0.96\text{ pF}}$$
+2. **Switching Activity Factor ($\alpha = 0.25$)**:
+   - For random binary inputs in arithmetic addition datapaths (Rabaey, Weste & Harris), intermediate and output nodes do not switch simultaneously on every clock cycle. The average node switching probability is standardly taken as **$\alpha = 0.25$** (one $0 \rightarrow 1$ power transition per 4 cycles on average).
+3. **Frequency ($f$)**:
+   - **Nominal Testbench Frequency ($f = 50\text{ MHz}$)**: Derived directly from the fastest input signal pulse period ($T_{\text{period}} = 20\text{ ns}$) configured in `8_bit_CSA_tb`.
+   - **Maximum Operating Frequency ($f_{\text{max}} \approx 500\text{ MHz}$)**: Theoretical throughput limit bound by critical path propagation delay ($f_{\text{max}} \approx 1 / t_{\text{pd}} = 1 / 1.74\text{ ns} \approx 574\text{ MHz}$).
 
+#### Power & Figure-of-Merit Results:
 1. **Power Dissipation ($P_{\text{avg}}$)**:
-   - **Dynamic Power**: $P_{\text{dyn}} = \alpha \cdot C_{\text{total}} \cdot V_{DD}^2 \cdot f$
-     - At testbench nominal frequency ($f = 50\text{ MHz}$, $\alpha = 0.25$): $P_{\text{dyn}} \approx 38.88\,\mu\text{W}$
-     - At peak operational frequency ($f = 500\text{ MHz}$, $\alpha = 0.25$): $P_{\text{dyn}} \approx 388.8\,\mu\text{W}$
-   - **Static (Leakage) Power**: $P_{\text{stat}} = I_{\text{leak}} \times V_{DD} \approx 300\text{ nA} \times 1.8\text{ V} \approx 0.54\,\mu\text{W}$
-   - **Total Average Power**:
+   - Dynamic component: $P_{\text{dyn}} = 0.25 \times 0.96\text{ pF} \times (1.8\text{ V})^2 \times f$
+     - At $f = 50\text{ MHz}$: $P_{\text{dyn}} \approx 38.88\,\mu\text{W}$
+     - At $f = 500\text{ MHz}$: $P_{\text{dyn}} \approx 388.8\,\mu\text{W}$
+   - Static leakage component: $P_{\text{stat}} = I_{\text{leak}} \times V_{DD} \approx 300\text{ nA} \times 1.8\text{ V} \approx 0.54\,\mu\text{W}$
+   - Total Average Power:
      $$P_{\text{avg}} = \mathbf{39.42\,\mu\text{W}}\text{ (@ }50\text{ MHz)} \quad\Big|\quad \mathbf{389.34\,\mu\text{W}}\text{ (@ }500\text{ MHz)}$$
 
 2. **Power-Delay Product (PDP)**:
