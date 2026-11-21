@@ -74,11 +74,11 @@ This project delivers:
 | **Transistor Sizing** | PMOS: $W = 2\,\mu\text{m}, L = 180\,\text{nm}$<br>NMOS: $W = 2\,\mu\text{m}, L = 180\,\text{nm}$ | Balanced $W/L$ ratios for robust drive strength |
 | **Word Length** | 8-bit ($A[7:0]$, $B[7:0]$, $C[7:0]$) | 3-operand multi-input addition |
 | **Output Word Length** | 9-bit ($S[8:0]$ + Carry Out) | Full arithmetic range preserved without overflow |
-| **Propagation Delay ($t_{pd}$)** | **1.74 ns** | Critical path ($t_{PLH} = 1.82\,\text{ns}$, $t_{PHL} = 1.66\,\text{ns}$) |
-| **Contamination Delay ($t_{cd}$)** | **0.226 ns (226 ps)** | Minimum output latency ($S_0$ path from transient simulation) |
-| **Average Power ($P_{avg}$)** | **389.3 µW** (@ 500 MHz) / **39.4 µW** (@ 50 MHz) | Dynamic switching + subthreshold leakage |
-| **Power-Delay Product (PDP)** | **677.4 fJ (0.677 pJ)** | Energy consumed per 8-bit addition |
-| **Energy-Delay Product (EDP)** | **1.18 × 10⁻²¹ J·s (1178.7 fJ·ns)** | Energy-efficiency and speed figure-of-merit |
+| **Propagation Delay ($t_{pd}$)** | **1.685 ns** | Critical path ($t_{PLH} = 1.608\,\text{ns}$, $t_{PHL} = 1.762\,\text{ns}$) |
+| **Contamination Delay ($t_{cd}$)** | **0.222 ns (222 ps)** | Minimum output latency ($S_0$ path from transient simulation) |
+| **Average Power ($P_{avg}$)** | **39.42 µW** (@ 50 MHz nominal testbench) | Total power: $P_{\text{dyn}} (38.88\,\mu\text{W}) + P_{\text{stat}} (0.54\,\mu\text{W})$ |
+| **Power-Delay Product (PDP)** | **66.42 fJ** | $\text{PDP} = P_{\text{avg}} \times t_{\text{pd}} = 39.42\,\mu\text{W} \times 1.685\,\text{ns}$ |
+| **Energy-Delay Product (EDP)** | **111.92 fJ·ns (1.119 × 10⁻²² J·s)** | $\text{EDP} = \text{PDP} \times t_{\text{pd}} = 66.42\,\text{fJ} \times 1.685\,\text{ns}$ |
 | **Verification Tools** | Assura 4.1 DRC & LVS | Clean DRC & 100% LVS Netlist Match |
 | **Simulation Engine** | Cadence Spectre RF | Transient simulation ($t_r = t_f = 50\,\text{ps}$) |
 
@@ -353,10 +353,10 @@ All propagation delays were evaluated at the $50\%$ supply threshold ($V_{\text{
 | **CMOS Inverter** | $32.3\text{ ps}$ | $12.9\text{ ps}$ | $22.6\text{ ps}$ | $12.9\text{ ps}$ | Gate-to-drain pull-up/pull-down ($C_L \approx 15\text{ fF}$) |
 | **TG XOR Gate** | $52.1\text{ ps}$ | $38.5\text{ ps}$ | $45.3\text{ ps}$ | $38.5\text{ ps}$ | Inverter buffer $+$ complementary TG switch |
 | **1-Bit Full Adder** | $185.0\text{ ps}$ | $162.0\text{ ps}$ | **$193.3\text{ ps}$** | $125.0\text{ ps}$ | Critical carry path: $1\text{ XOR} + 1\text{ AND} + 1\text{ OR} + t_{\text{buf}}$ |
-| **4-Bit CSA Block** | $0.99\text{ ns}$ | $0.94\text{ ns}$ | **$0.965\text{ ns}$** | $226\text{ ps}$ | Rank 1 CSA stage ($0.193\text{ ns}$) $+ 4\times$ ripple carry merge |
-| **8-Bit Top CSA** | **$1.82\text{ ns}$** | **$1.66\text{ ns}$** | **$1.74\text{ ns}$** | **$226\text{ ps}$** | Rank 1 CSA stage $+ 8\times$ ripple carry merge ($S_8$ output) |
+| **4-Bit CSA Block** | $0.99\text{ ns}$ | $0.94\text{ ns}$ | **$0.965\text{ ns}$** | $222\text{ ps}$ | Rank 1 CSA stage ($0.193\text{ ns}$) $+ 4\times$ ripple carry merge |
+| **8-Bit Top CSA** | **$1.608\text{ ns}$** | **$1.762\text{ ns}$** | **$1.685\text{ ns}$** | **$222\text{ ps}$** | Measured across all vector transitions in `8_bit_CSA.csv` |
 
-> **Comparative Advantage**: A conventional 3-operand Ripple-Carry Adder would incur a critical delay of $2 \times 8 \times t_{\text{carry}} \approx 3.09\text{ ns}$. The Carry-Save Adder achieves **$1.74\text{ ns}$ (43.7% latency reduction)**.
+> **Comparative Advantage**: A conventional 3-operand Ripple-Carry Adder would incur a critical delay of $2 \times 8 \times t_{\text{carry}} \approx 3.09\text{ ns}$. The Carry-Save Adder achieves **$1.685\text{ ns}$ (45.5% latency reduction)**.
 
 ### 7.3 Power, PDP, and EDP Analysis (8-Bit CSA)
 
@@ -364,32 +364,35 @@ The 8-bit Carry-Save Adder comprises 16 Full Adder cells with Transmission Gate 
 
 #### Dynamic Power Parameter Derivations ($P_{\text{dyn}} = \alpha \cdot C_{\text{total}} \cdot V_{DD}^2 \cdot f$):
 1. **Total Switched Capacitance ($C_{\text{total}} \approx 0.96\text{ pF}$)**:
-   - In `gpdk180` ($W_n = W_p = 2.0\,\mu\text{m}, L = 180\,\text{nm}$), gate capacitance is $C_g = W \cdot L \cdot C_{ox} \approx 3.11\text{ fF}$.
-   - Accounting for drain/source diffusion ($C_{\text{diff}} \approx 2.8\text{ fF}$) and internal interconnect routing, each 1-bit TG Full Adder presents an effective capacitance of $C_{\text{node}} \approx 60\text{ fF}$.
-   - Across the 16 Full Adders (8 in Rank-1 CSA + 8 in Rank-2 Vector Merge):
-     $$C_{\text{total}} = 16 \times 60\text{ fF} \approx \mathbf{0.96\text{ pF}}$$
-2. **Switching Activity Factor ($\alpha = 0.25$)**:
-   - For random binary inputs in arithmetic addition datapaths (Rabaey, Weste & Harris), intermediate and output nodes do not switch simultaneously on every clock cycle. The average node switching probability is standardly taken as **$\alpha = 0.25$** (one $0 \rightarrow 1$ power transition per 4 cycles on average).
-3. **Frequency ($f$)**:
-   - **Nominal Testbench Frequency ($f = 50\text{ MHz}$)**: Derived directly from the fastest input signal pulse period ($T_{\text{period}} = 20\text{ ns}$) configured in `8_bit_CSA_tb`.
-   - **Maximum Operating Frequency ($f_{\text{max}} \approx 500\text{ MHz}$)**: Theoretical throughput limit bound by critical path propagation delay ($f_{\text{max}} \approx 1 / t_{\text{pd}} = 1 / 1.74\text{ ns} \approx 574\text{ MHz}$).
+   - In `gpdk180` ($W_n = W_p = 2.0\,\mu\text{m}, L = 180\,\text{nm}$), gate channel capacitance is $C_g = W \cdot L \cdot C_{ox} \approx 3.11\text{ fF}$.
+   - Accounting for drain/source diffusion ($C_{\text{diff}} \approx 2.8\text{ fF}$) and interconnect routing, each 1-bit TG Full Adder presents an effective capacitance of $C_{\text{node}} \approx 60\text{ fF}$.
+   - Across all 16 Full Adders (8 in Rank-1 CSA + 8 in Rank-2 Vector Merge):
+     $$C_{\text{total}} = 16 \times 60\text{ fF} = \mathbf{960\text{ fF}} = \mathbf{0.96\text{ pF}}$$
+2. **Supply Voltage ($V_{DD} = 1.8\text{ V}$)**:
+   $$V_{DD}^2 = (1.8\text{ V})^2 = \mathbf{3.24\text{ V}^2}$$
+3. **Switching Activity Factor ($\alpha = 0.25$)**:
+   - For multi-operand arithmetic datapaths with random operands (Rabaey / Weste & Harris), not all intermediate nodes switch every cycle. The average node transition probability is taken as **$\alpha = 0.25$**.
+4. **Energy Consumed Per Operation ($E_{\text{op}}$)**:
+   $$E_{\text{op}} = \alpha \cdot C_{\text{total}} \cdot V_{DD}^2 = 0.25 \times (0.96 \times 10^{-12}\text{ F}) \times 3.24\text{ V}^2 = \mathbf{7.776 \times 10^{-13}\text{ J}} = \mathbf{777.6\text{ fJ}}\ (0.778\text{ pJ})$$
+5. **Frequency ($f$)**:
+   - **Nominal Testbench Frequency ($f = 50\text{ MHz}$)**: Derived from the fastest input signal pulse period ($T_{\text{period}} = 20\text{ ns}$) configured in `8_bit_CSA_tb`.
+   - **Maximum Operating Frequency ($f_{\text{max}} = 593.5\text{ MHz}$)**: Maximum throughput frequency without timing violation ($f_{\text{max}} = 1 / t_{\text{pd}} = 1 / 1.685\text{ ns} = \mathbf{593.5\text{ MHz}}$).
 
 #### Power & Figure-of-Merit Results:
-1. **Power Dissipation ($P_{\text{avg}}$)**:
-   - Dynamic component: $P_{\text{dyn}} = 0.25 \times 0.96\text{ pF} \times (1.8\text{ V})^2 \times f$
-     - At $f = 50\text{ MHz}$: $P_{\text{dyn}} \approx 38.88\,\mu\text{W}$
-     - At $f = 500\text{ MHz}$: $P_{\text{dyn}} \approx 388.8\,\mu\text{W}$
-   - Static leakage component: $P_{\text{stat}} = I_{\text{leak}} \times V_{DD} \approx 300\text{ nA} \times 1.8\text{ V} \approx 0.54\,\mu\text{W}$
+1. **Average Power Dissipation ($P_{\text{avg}}$)**:
+   - Dynamic component: $P_{\text{dyn}} = E_{\text{op}} \times f = 777.6\text{ fJ} \times 50\text{ MHz} = \mathbf{38.88\,\mu\text{W}}$
+   - Static leakage component: $P_{\text{stat}} = I_{\text{leak}} \times V_{DD} \approx 300\text{ nA} \times 1.8\text{ V} \approx \mathbf{0.54\,\mu\text{W}}$
    - Total Average Power:
-     $$P_{\text{avg}} = \mathbf{39.42\,\mu\text{W}}\text{ (@ }50\text{ MHz)} \quad\Big|\quad \mathbf{389.34\,\mu\text{W}}\text{ (@ }500\text{ MHz)}$$
+     $$P_{\text{avg}} = P_{\text{dyn}} + P_{\text{stat}} = 38.88\,\mu\text{W} + 0.54\,\mu\text{W} = \mathbf{39.42\,\mu\text{W}}\ (3.942 \times 10^{-5}\text{ W})$$
 
 2. **Power-Delay Product (PDP)**:
-   Energy consumed per complete 8-bit carry-save addition:
-   $$\text{PDP} = P_{\text{avg}} \times t_{\text{pd}} = 389.34\,\mu\text{W} \times 1.74\text{ ns} = \mathbf{6.774 \times 10^{-13}\text{ J}} = \mathbf{677.4\text{ fJ}}\ (0.677\text{ pJ})$$
+   Calculated strictly as the product of average simulated power and critical propagation delay:
+   $$\text{PDP} = P_{\text{avg}} \times t_{\text{pd}}$$
+   $$\text{PDP} = (3.942 \times 10^{-5}\text{ W}) \times (1.685 \times 10^{-9}\text{ s}) = \mathbf{6.642 \times 10^{-14}\text{ J}} = \mathbf{66.42\text{ fJ}}$$
 
 3. **Energy-Delay Product (EDP)**:
-   Primary metric balancing computational throughput and energy cost:
-   $$\text{EDP} = \text{PDP} \times t_{\text{pd}} = 677.4\text{ fJ} \times 1.74\text{ ns} = \mathbf{1178.7\text{ fJ}\cdot\text{ns}} = \mathbf{1.179 \times 10^{-21}\text{ J}\cdot\text{s}}$$
+   $$\text{EDP} = \text{PDP} \times t_{\text{pd}}$$
+   $$\text{EDP} = (6.642 \times 10^{-14}\text{ J}) \times (1.685 \times 10^{-9}\text{ s}) = \mathbf{1.1192 \times 10^{-22}\text{ J}\cdot\text{s}} = \mathbf{111.92\text{ fJ}\cdot\text{ns}}$$
 
 ### 7.4 Cadence ADE Calculator Expressions
 
@@ -509,13 +512,4 @@ DIC_mini_Project-JD/
 
 ## 10. Author & Contact
 
-Developed as part of a Digital Integrated Circuits (DIC) full-custom VLSI project.
-
-- **Author**: **Dinesh Jonnalagadda**
-- **GitHub**: [@dinesh-jonnalagadda](https://github.com/dinesh-jonnalagadda)
-- **LinkedIn**: [Dinesh Jonnalagadda](https://www.linkedin.com/in/dinesh-jonnalagadda-424451289/)
-
-
----
-
-*If you found this project helpful for your learning or research in custom IC design and VLSI arithmetic, feel free to star this repository!*
+Developed as part of a Digital Integrated Circuits (DIC) full-custom VLS
